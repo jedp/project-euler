@@ -105,12 +105,12 @@ def solve(n):
 
     return accum
 
-
 if __name__ == '__main__':
     print "Assert solve(10) == 2520"
     assert(solve(10) == 2520)
 
     print "Computing solve(20)"
     print solve(20)
+    # w00t
 
 
