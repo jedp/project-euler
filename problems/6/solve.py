@@ -16,23 +16,46 @@ natural numbers and the square of the sum.
 
 import operator
 
-def squares_summed(n):
+# ----------------------------------------------------------------------
+# brute force and simple
+
+def squares_summed1(n):
     accum = 0
     for i in range(n+1)[1:]:
         accum += pow(i,2)
 
     return accum
 
-def sum_squared(n):
+def sum_squared1(n):
     return(pow(reduce(operator.add, range(n+1)[1:]), 2))
 
+# ----------------------------------------------------------------------
+# more interesting
+
+def squares_summed(n):
+    """
+    1^2 + 2^2 + ... + n^2 = n * (n+1) * (2n+1) * 1/6
+    """
+    return n * (n+1) * (2*n + 1) / 6 
+
+def sum_squared(n):
+    """        
+    (1 + 2 + ... + n)^2 = n^2 * (n+1)^2 * 1/4
+    """
+    return pow(n, 2) * pow(n+1, 2) / 4
 
 if __name__ == '__main__':
     print "Testing assertions ...",
+    assert(squares_summed1(10) == 385)
+    assert(sum_squared1(10) == 3025)
+    assert(sum_squared1(10) - squares_summed(10) == 2640)
+
     assert(squares_summed(10) == 385)
     assert(sum_squared(10) == 3025)
     assert(sum_squared(10) - squares_summed(10) == 2640)
     print "ok"
+
+
 
     print "Squares summed of first 100 natural numbers:",
     a = squares_summed(100)
