@@ -39,4 +39,3 @@ if __name__ == '__main__':
     n = 10001
     print "%dst prime number:" % (n),
     print list(itertools.islice(primegen(), n))[-1]
-
