@@ -1,4 +1,5 @@
 import time
+import heapq
 import itertools
 
 def wheel2357():
@@ -36,48 +37,50 @@ def primegen():
     for p in [2, 3, 5, 7, 11]:
         yield p
 
-    ps = {}
+    h = []
     
     # next multiple not in wheel is of 11
-    ps[121] = set([11])
+    heapq.heappush(h, (121, 11))
 
     while True:
         p = wheel.next()
 
-        if p in ps:
-            # ps is a multiple of some prior prime
-            # adjust the next multiples dictionary
-            for fac in ps[p]:
-                nextkey = fac + p
-                if nextkey not in ps:
-                    s = set()
-                else:
-                    s = ps[nextkey]
-                s.add(fac)
-                ps[nextkey] = s
+        n, fac = heapq.heappop(h)
 
-        else:
-            # p is prime
+        if n > p:
+            # factors skip past p, so p is prime.
+            # put factors back into the future, 
+            # along with p itself
+            heapq.heappush(h, (n, fac))
+            heapq.heappush(h, (p*p, p))
+
             yield p
 
-        # for expected multiples we've passed, add to them
-        # and push them into THE FUTURE!!!
-        ps[p*p] = set([p])
 
-        for key in [k for k in ps if k < p]:
-            for fac in ps[key]:
-                nextkey = key
-                while nextkey < p:
-                    nextkey += fac
-                if nextkey not in ps:
-                    s = set()
-                else:
-                    s = ps[nextkey]
-                s.add(fac)
-                ps[nextkey] = s
+        elif n == p:
+            # p is a multiple of a prior prime
 
-            del ps[key]
+            while (not n % 2) or (not n % 3):
+                n += fac
+            heapq.heappush(h, (n, fac))
+
+        else:
+            # p factors are too small.  increment until
+            # greater than p and push back into the future.
+
+            while n < p:
+                while n < p:
+                    n += fac
+
+                n, fac = heapq.heappushpop(h, (n, fac))
                 
+            # maybe we found a prime while doing that
+            if n > p:
+                yield p
+
+            # the last one skipped p - push back
+            heapq.heappush(h, (n, fac))
+
 
 def takeprimes(n):
     s = time.time()
