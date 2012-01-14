@@ -30,14 +30,14 @@ def primegen():
 
     Yields 2, 3, 5, 7, ...
     """
-
     wheel = wheel2357()
-    ps = {}
-    
+
     # initial set of primes assumed by our wheel
     for p in [2, 3, 5, 7, 11]:
         yield p
 
+    ps = {}
+    
     # next multiple not in wheel is of 11
     ps[121] = set([11])
 
@@ -46,14 +46,13 @@ def primegen():
 
         if p in ps:
             # ps is a multiple of some prior prime
-            facs = ps[p]
-
             # adjust the next multiples dictionary
-            for fac in facs:
+            for fac in ps[p]:
                 nextkey = fac + p
                 if nextkey not in ps:
-                    ps[nextkey] = set()
-                s = ps[nextkey]
+                    s = set()
+                else:
+                    s = ps[nextkey]
                 s.add(fac)
                 ps[nextkey] = s
 
@@ -64,23 +63,30 @@ def primegen():
         # for expected multiples we've passed, add to them
         # and push them into THE FUTURE!!!
         ps[p*p] = set([p])
+
         for key in [k for k in ps if k < p]:
             for fac in ps[key]:
                 nextkey = key
                 while nextkey < p:
                     nextkey += fac
-                s = ps.get(nextkey, set())
+                if nextkey not in ps:
+                    s = set()
+                else:
+                    s = ps[nextkey]
                 s.add(fac)
                 ps[nextkey] = s
+
             del ps[key]
                 
-        
-
 
 def takeprimes(n):
     s = time.time()
     l = list(itertools.islice(primegen(), n))
     e = time.time()
-    print "got", n, "primse in", e-s, "sec"
+    print "got", n, "primes in", e-s, "sec"
     return l
+
+if __name__ == '__main__':
+    print "Assert 10001st prime == 104743"
+    assert(takeprimes(10001)[-1] == 104743)
 
